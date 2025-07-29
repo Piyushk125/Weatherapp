@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Weather App</title>
+  <style>
+    body {
+      background-color: lightblue;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 50px;
+    }
+    input {
+      font-size: 24px;
+      padding: 10px;
+      width: 300px;
+    }
+    button {
+      font-size: 18px;
+      padding: 10px 20px;
+      margin-top: 10px;
+    }
+    #weather-output {
+      margin-top: 30px;
+      font-size: 20px;
+    }
+    #temp {
+      font-size: 40px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Weather App</h1>
+  <input type="text" id="city-input" placeholder="Enter city name..." />
+  <br>
+  <button onclick="getWeather()">Get Weather</button>
+
+  <div id="weather-output">
+    <div id="temp"></div>
+    <div id="details"></div>
+  </div>
+
+  <script>
+    const API_KEY = "a3adfbf67dd8423399b94607252907";
+
+    async function getWeather() {
+      const city = document.getElementById("city-input").value.trim();
+      if (!city) {
+        document.getElementById("temp").textContent = "Enter a city name";
+        document.getElementById("details").textContent = "";
+        return;
+      }
+
+      const url = `https://api.weatherapi.com/v1/current.json?key=${API_KEY}&q=${encodeURIComponent(city)}`;
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+
+        if (data.error) {
+          document.getElementById("temp").textContent = "City not found";
+          document.getElementById("details").textContent = "";
+        } else {
+          const temp = data.current.temp_c;
+          const condition = data.current.condition.text;
+          const wind = data.current.wind_kph;
+          const humidity = data.current.humidity;
+          const location = `${data.location.name}, ${data.location.country}`;
+
+          document.getElementById("temp").textContent = `${temp}°C | ${condition}`;
+          document.getElementById("details").textContent = `Location: ${location}\nWind: ${wind} kph\nHumidity: ${humidity}%`;
+        }
+      } catch (error) {
+        document.getElementById("temp").textContent = "Error fetching data";
+        document.getElementById("details").textContent = "";
+      }
+    }
+
+    // Optional: allow pressing Enter to trigger search
+    document.getElementById("city-input").addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        getWeather();
+      }
+    });
+  </script>
+
+</body>
+</html>
+
